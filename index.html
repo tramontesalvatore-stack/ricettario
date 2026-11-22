@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Il Ricettario di Salvo e Valeria — 256 ricette</title>
-<meta name="description" content="Il ricettario di Salvo e Valeria: ricette di casa, tradizionali e per Crock-Pot Turbo Express (pressione, slow cook, sous vide), con filtri per portata, fonte e metodo di cottura.">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>I Tramin · Il ricettario di casa — 256 ricette</title>
+<meta name="description" content="Il ricettario di casa dei Tramin (Salvo e Valeria): ricette di casa, tradizionali e per Crock-Pot Turbo Express (pressione, slow cook, sous vide), con filtri per portata, fonte e metodo di cottura.">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -13,7 +12,7 @@
 <meta name="theme-color" content="#b4551f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Ricettario">
+<meta name="apple-mobile-web-app-title" content="I Tramin">
 <style>
   :root{
     --bg:#faf6f0; --card:#ffffff; --ink:#2b2118; --muted:#7a6a58; --line:#e7dccb;
@@ -23,6 +22,8 @@
   *{box-sizing:border-box}
   body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink)}
   header{padding:28px 16px 8px;text-align:center}
+  .logo{height:168px;width:auto}
+  .hero{width:100%;max-width:820px;height:auto;border-radius:16px;margin-top:16px}
   header h1{margin:0;font-size:34px;letter-spacing:.5px}
   header p{margin:6px 0 0;color:var(--muted);font-size:15px}
   .wrap{max-width:1080px;margin:0 auto;padding:12px 14px 48px}
@@ -80,8 +81,10 @@
 </head>
 <body>
 <header>
-  <h1>Il Ricettario</h1>
-  <p>Il ricettario di Salvo e Valeria — 256 ricette di casa e per Crock-Pot Turbo Express: pressione, slow cook e sous vide</p>
+  <img class="logo" src="logo.png" alt="I Tramin: Salvo e Valeria che cucinano insieme">
+  <h1>I Tramin</h1>
+  <p>Il ricettario di casa — 256 ricette di Salvo e Valeria, di casa e per Crock-Pot Turbo Express: pressione, slow cook e sous vide</p>
+  <img class="hero" src="testata.jpg" alt="Salvo e Valeria in cucina">
   <div class="viewtoggle">
     <button id="btnRecipes" class="on" type="button">Ricette</button>
     <button id="btnGuide" type="button">Guida Turbo Express</button>
@@ -194,7 +197,7 @@
   </section>
 </div>
 
-<footer>Ricettario di Salvo e Valeria — le ricette di casa sono nostre; le altre sono tratte dai ricettari Crock-Pot indicati in ogni scheda.</footer>
+<footer>I Tramin · Il ricettario di casa — le ricette di casa sono di Salvo e Valeria; le altre sono tratte dai ricettari Crock-Pot indicati in ogni scheda.</footer>
 
 <div class="overlay" id="overlay">
   <div class="sheet" id="sheet"></div>
