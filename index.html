@@ -83,26 +83,13 @@
   <section id="viewRecipes">
     <div class="controls">
       <input id="q" type="search" placeholder="Cerca una ricetta o un ingrediente…" autocomplete="off">
-      <div class="cats" id="cats"></div>
       <div class="row">
+        <label for="catSel">Categoria</label>
+        <select id="catSel"></select>
         <label for="srcSel">Fonte</label>
         <select id="srcSel"></select>
         <label for="modeSel">Metodo</label>
         <select id="modeSel"></select>
-      </div>
-      <div class="row">
-        <label>Tempo massimo</label>
-        <div class="sliderbox">
-          <input id="tSlider" type="range" min="5" max="1440" step="5" value="1440">
-          <span class="tval" id="tVal">qualsiasi</span>
-        </div>
-        <div class="quick" id="quick">
-          <button type="button" data-t="30">30 min</button>
-          <button type="button" data-t="60">1 h</button>
-          <button type="button" data-t="120">2 h</button>
-          <button type="button" data-t="240">4 h</button>
-          <button type="button" data-t="1440" class="on">Tutti</button>
-        </div>
       </div>
     </div>
     <p class="count" id="count"></p>

@@ -1,6 +1,6 @@
 (function(){
   var R = window.RECIPES || [];
-  var state = { q:'', cat:'', src:'', mode:'', tmax:1440 };
+  var state = { q:'', cat:'', src:'', mode:'' };
   var $ = function(id){ return document.getElementById(id); };
 
   function fmtTime(m){
@@ -26,27 +26,6 @@
     });
     return out.sort();
   }
-
-  // category pills
-  var cats = uniq('category');
-  var catsEl = $('cats');
-  function renderCats(){
-    catsEl.innerHTML = '';
-    var all = document.createElement('button');
-    all.type = 'button'; all.className = 'cat' + (state.cat === '' ? ' on' : '');
-    all.textContent = 'Tutte';
-    all.onclick = function(){ state.cat = ''; renderCats(); apply(); };
-    catsEl.appendChild(all);
-    cats.forEach(function(c){
-      var b = document.createElement('button');
-      b.type = 'button'; b.className = 'cat' + (state.cat === c ? ' on' : '');
-      b.textContent = c;
-      b.onclick = function(){ state.cat = (state.cat === c ? '' : c); renderCats(); apply(); };
-      catsEl.appendChild(b);
-    });
-  }
-
-  // selects
   function fillSelect(el, values, allLabel){
     el.innerHTML = '';
     var o = document.createElement('option'); o.value = ''; o.textContent = allLabel; el.appendChild(o);
@@ -54,37 +33,26 @@
       var op = document.createElement('option'); op.value = v; op.textContent = v; el.appendChild(op);
     });
   }
+  fillSelect($('catSel'), uniq('category'), 'Tutte le categorie');
   fillSelect($('srcSel'), uniq('source'), 'Tutte le fonti');
   var allModes = {};
   R.forEach(function(r){ modesOf(r).forEach(function(m){ allModes[m] = 1; }); });
   fillSelect($('modeSel'), Object.keys(allModes).sort(), 'Tutti i metodi');
 
-  // events
   $('q').addEventListener('input', function(e){ state.q = e.target.value.trim().toLowerCase(); apply(); });
+  $('catSel').addEventListener('change', function(e){ state.cat = e.target.value; apply(); });
   $('srcSel').addEventListener('change', function(e){ state.src = e.target.value; apply(); });
   $('modeSel').addEventListener('change', function(e){ state.mode = e.target.value; apply(); });
-  var slider = $('tSlider'), tVal = $('tVal');
-  function setTime(v){
-    state.tmax = v; slider.value = v;
-    tVal.textContent = (v >= 1440) ? 'qualsiasi' : ('fino a ' + fmtTime(v));
-    var btns = $('quick').querySelectorAll('button');
-    btns.forEach(function(b){ b.classList.toggle('on', Number(b.getAttribute('data-t')) === v); });
-  }
-  slider.addEventListener('input', function(e){ setTime(Number(e.target.value)); apply(); });
-  $('quick').querySelectorAll('button').forEach(function(b){
-    b.addEventListener('click', function(){ setTime(Number(b.getAttribute('data-t'))); apply(); });
-  });
   $('resetBtn').addEventListener('click', function(){
-    state = { q:'', cat:'', src:'', mode:'', tmax:1440 };
-    $('q').value = ''; $('srcSel').value = ''; $('modeSel').value = '';
-    setTime(1440); renderCats(); apply();
+    state = { q:'', cat:'', src:'', mode:'' };
+    $('q').value = ''; $('catSel').value = ''; $('srcSel').value = ''; $('modeSel').value = '';
+    apply();
   });
 
   function matches(r){
     if(state.cat && r.category !== state.cat) return false;
     if(state.src && r.source !== state.src) return false;
     if(state.mode && modesOf(r).indexOf(state.mode) === -1) return false;
-    if(state.tmax < 1440 && r.timeMinutes != null && r.timeMinutes > state.tmax) return false;
     if(state.q){
       var hay = (r.title + ' ' + (r.ingredients || []).map(function(g){
         return (g.items || []).join(' ');
@@ -122,7 +90,6 @@
     });
   }
 
-  // detail
   var overlay = $('overlay'), sheet = $('sheet');
   function openDetail(slug){
     var r = null;
@@ -166,7 +133,6 @@
   overlay.addEventListener('click', function(e){ if(e.target === overlay) closeDetail(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeDetail(); });
 
-  // views
   $('btnRecipes').addEventListener('click', function(){
     $('viewRecipes').style.display = ''; $('viewGuide').style.display = 'none';
     $('btnRecipes').classList.add('on'); $('btnGuide').classList.remove('on');
@@ -176,7 +142,5 @@
     $('btnGuide').classList.add('on'); $('btnRecipes').classList.remove('on');
   });
 
-  renderCats();
-  setTime(1440);
   apply();
 })();
