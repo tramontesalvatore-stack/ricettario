@@ -74,7 +74,7 @@
     h += '<h3>' + esc(r.title) + '</h3>';
     h += '<div class="meta"><span>' + esc(r.course || r.category) + '</span>';
     if(r.kcal) h += '<span>~' + esc(r.kcal) + ' kcal</span>';
-    if(r.timeMinutes != null) h += '<span>' + fmtTime(r.timeMinutes) + '</span>';
+    if(r.timeMinutes != null) h += '<span>cottura ' + fmtTime(r.timeMinutes) + '</span>';
     h += '</div>';
     if(r.tags && r.tags.length){
       h += '<div>' + r.tags.map(function(t){ return '<span class="tag">#' + esc(t) + '</span>'; }).join(' ') + '</div>';
