@@ -1,0 +1,15 @@
+{
+  "name": "Il Ricettario di Salvo e Valeria",
+  "short_name": "Ricettario",
+  "description": "256 ricette di casa e per Crock-Pot Turbo Express, con guida e calcolatore sous vide.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#faf6f0",
+  "theme_color": "#b4551f",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
