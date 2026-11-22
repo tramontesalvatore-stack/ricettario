@@ -98,6 +98,46 @@
   }
 
   var overlay = $('overlay'), sheet = $('sheet');
+  var detailState = {r: null, base: 0, n: 0};
+  function baseServings(r){
+    var m = (r.servings || '').match(/\d+/);
+    return m ? parseInt(m[0], 10) : 0;
+  }
+  function fmtQty(v){
+    if(v >= 100) return String(Math.round(v / 5) * 5);
+    if(v >= 20) return String(Math.round(v));
+    if(v >= 10){ var r = Math.round(v * 2) / 2; return String(r).replace('.', ','); }
+    var whole = Math.floor(v), frac = v - whole;
+    var fr = [[0.25, '¼'], [1 / 3, '⅓'], [0.5, '½'], [2 / 3, '⅔'], [0.75, '¾']];
+    for(var i = 0; i < fr.length; i++){
+      if(Math.abs(frac - fr[i][0]) < 0.06) return (whole > 0 ? String(whole) : '') + fr[i][1];
+    }
+    if(frac < 0.06) return String(whole);
+    if(frac > 0.94) return String(whole + 1);
+    return String(Math.round(v * 10) / 10).replace('.', ',');
+  }
+  function scaleItem(text, f){
+    if(f === 1) return text;
+    var m = text.match(/^(\s*)(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+)?)(?:\s*-\s*(\d+(?:[.,]\d+)?))?(.*)$/);
+    if(!m) return text;
+    function val(s){
+      if(s.indexOf('/') >= 0){ var p = s.split('/'); return parseFloat(p[0].replace(',', '.')) / parseFloat(p[1]); }
+      return parseFloat(s.replace(',', '.'));
+    }
+    var out = fmtQty(val(m[2]) * f);
+    if(m[3]) out += '-' + fmtQty(val(m[3]) * f);
+    return m[1] + out + m[4];
+  }
+  function ingredientsHtml(r, f){
+    var h = '';
+    (r.ingredients || []).forEach(function(g){
+      if(typeof g === 'string'){ h += '<ul><li>' + esc(scaleItem(g, f)) + '</li></ul>'; return; }
+      h += '<h4>' + esc(g.label || 'Ingredienti') + '</h4><ul>';
+      (g.items || []).forEach(function(it){ h += '<li>' + esc(scaleItem(it, f)) + '</li>'; });
+      h += '</ul>';
+    });
+    return h;
+  }
   function openDetail(slug){
     var r = null;
     R.forEach(function(x){ if(x.slug === slug) r = x; });
@@ -115,13 +155,16 @@
     h += '</div>';
     if(r.allergens && r.allergens.length){
       h += '<div class="warnbox">Allergeni: ' + esc(r.allergens.join(', ')) + '</div>';
+    } else if(r.allergensVerified){
+      h += '<p class="nutri">Nessun allergene da segnalare.</p>';
     }
+    h += '<div style="margin-top:10px"><button class="sharebtn" type="button" id="shareBtn">Condividi ricetta</button></div>';
     if(r.nutrition) h += '<p class="nutri">' + esc(r.nutrition) + '</p>';
-    (r.ingredients || []).forEach(function(g){
-      h += '<h4>' + esc(g.label || 'Ingredienti') + '</h4><ul>';
-      (g.items || []).forEach(function(it){ h += '<li>' + esc(it) + '</li>'; });
-      h += '</ul>';
-    });
+    detailState = {r: r, base: baseServings(r), n: baseServings(r)};
+    if(detailState.base){
+      h += '<div class="scaleRow">Porzioni: <button type="button" id="svMinus" aria-label="Meno porzioni">−</button> <strong id="svCount">' + detailState.n + '</strong> <button type="button" id="svPlus" aria-label="Più porzioni">+</button> <span class="scaleNote" id="svNote"></span></div>';
+    }
+    h += '<div id="ingBox">' + ingredientsHtml(r, 1) + '</div>';
     if(r.steps && r.steps.length){
       h += '<h4>Procedimento</h4><ol>';
       r.steps.forEach(function(s){ h += '<li>' + esc(s) + '</li>'; });
@@ -131,14 +174,42 @@
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     $('closeBtn').addEventListener('click', closeDetail);
+    var shareBtn = $('shareBtn');
+    if(shareBtn) shareBtn.addEventListener('click', function(){
+      var url = location.origin + location.pathname + '#ricetta=' + r.slug;
+      if(navigator.share){
+        navigator.share({title: r.title + ' — I Tramin', url: url}).catch(function(){});
+      } else if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(function(){
+          shareBtn.textContent = 'Link copiato ✓';
+          setTimeout(function(){ shareBtn.textContent = 'Condividi ricetta'; }, 2000);
+        });
+      }
+    });
+    if(detailState.base){
+      $('svMinus').addEventListener('click', function(){ setServings(detailState.n - 1); });
+      $('svPlus').addEventListener('click', function(){ setServings(detailState.n + 1); });
+    }
+    try{ history.replaceState(null, '', '#ricetta=' + r.slug); }catch(e){}
     sheet.scrollTop = 0; overlay.scrollTop = 0;
+  }
+  function setServings(n){
+    if(!detailState.r || !detailState.base) return;
+    detailState.n = Math.max(1, Math.min(24, n));
+    $('svCount').textContent = detailState.n;
+    var f = detailState.n / detailState.base;
+    $('ingBox').innerHTML = ingredientsHtml(detailState.r, f);
+    $('svNote').textContent = (f === 1) ? '' : 'quantità ricalcolate per ' + detailState.n + ' porzioni; i passaggi restano quelli originali';
   }
   function closeDetail(){
     overlay.classList.remove('open');
     document.body.style.overflow = '';
+    try{ history.replaceState(null, '', location.pathname); }catch(e){}
   }
   overlay.addEventListener('click', function(e){ if(e.target === overlay) closeDetail(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeDetail(); });
+  var hashMatch = (location.hash || '').match(/ricetta=([a-z0-9\-]+)/i);
+  if(hashMatch) openDetail(hashMatch[1]);
 
   /* ---- Calcolatore sous vide ---- */
   var BEEF_DONE = {'Al sangue':52,'Media al sangue':55,'Media':58,'Media ben cotta':62,'Ben cotta':66};
