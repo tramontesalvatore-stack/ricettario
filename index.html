@@ -3,8 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Il Ricettario — 254 ricette</title>
-<meta name="description" content="Ricettario personale: ricette tradizionali e per Crock-Pot Express (pressione, slow cook, sous vide), con filtri per categoria, fonte, metodo e tempo di cottura.">
+<title>Il Ricettario di Salvo e Valeria — 256 ricette</title>
+<meta name="description" content="Il ricettario di Salvo e Valeria: ricette di casa, tradizionali e per Crock-Pot Turbo Express (pressione, slow cook, sous vide), con filtri per portata, fonte e metodo di cottura.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#b4551f">
 <style>
   :root{
     --bg:#faf6f0; --card:#ffffff; --ink:#2b2118; --muted:#7a6a58; --line:#e7dccb;
@@ -72,7 +76,7 @@
 <body>
 <header>
   <h1>Il Ricettario</h1>
-  <p>254 ricette: tradizionali e per Crock-Pot Turbo Express — pressione, slow cook e sous vide</p>
+  <p>Il ricettario di Salvo e Valeria — 256 ricette di casa e per Crock-Pot Turbo Express: pressione, slow cook e sous vide</p>
   <div class="viewtoggle">
     <button id="btnRecipes" class="on" type="button">Ricette</button>
     <button id="btnGuide" type="button">Guida Turbo Express</button>
@@ -84,7 +88,7 @@
     <div class="controls">
       <input id="q" type="search" placeholder="Cerca una ricetta o un ingrediente…" autocomplete="off">
       <div class="row">
-        <label for="catSel">Categoria</label>
+        <label for="catSel">Portata</label>
         <select id="catSel"></select>
         <label for="srcSel">Fonte</label>
         <select id="srcSel"></select>
@@ -169,10 +173,21 @@
       <tr><td>Verdure tenere</td><td>1–5 cm</td><td>83 °C o superiore</td><td>1 ora</td></tr>
       <tr><td>Verdure a radice</td><td>1–5 cm</td><td>83 °C o superiore</td><td>1–1,5 ore</td></tr>
     </table></div>
+
+    <h2>Punti di cottura del manzo (sous vide)</h2>
+    <p class="note">Integrazione pratica, non presente nel manuale ufficiale: la temperatura decide il punto di cottura, il tempo dipende dallo spessore. Sotto i 54 °C (al sangue) non superare le 2 ore e mezza di cottura: per i tagli da 5 cm in su conviene stare almeno a 54 °C. A fine cottura asciuga bene la carne e rosola 1 minuto per lato a fuoco fortissimo. Esempio: fiorentina da 3 cm media al sangue = 54–55 °C per circa 1 ora e mezza; media = 58–59 °C, stesso tempo.</p>
+    <div class="tablewrap"><table>
+      <tr><th>Spessore</th><th>Al sangue (49–52 °C)</th><th>Media al sangue (54–56 °C)</th><th>Media (58–60 °C)</th><th>Media ben cotta (62–64 °C)</th><th>Ben cotta (66 °C e oltre)</th></tr>
+      <tr><td>2 cm</td><td>circa 1 ora</td><td>circa 1 ora</td><td>circa 1 ora</td><td>circa 1 ora</td><td>circa 1 ora</td></tr>
+      <tr><td>3 cm</td><td>circa 1 ora e mezza</td><td>circa 1 ora e mezza</td><td>circa 1 ora e mezza</td><td>circa 1 ora e mezza</td><td>circa 1 ora e mezza</td></tr>
+      <tr><td>4 cm</td><td>circa 2 ore e mezza</td><td>circa 2 ore e mezza</td><td>circa 2 ore e mezza</td><td>circa 2 ore e mezza</td><td>circa 2 ore e mezza</td></tr>
+      <tr><td>5 cm</td><td>circa 3 ore</td><td>circa 3 ore</td><td>circa 3 ore</td><td>circa 3 ore</td><td>circa 3 ore</td></tr>
+      <tr><td>6 cm</td><td>circa 3 ore e mezza – 4 ore</td><td>circa 3 ore e mezza – 4 ore</td><td>circa 3 ore e mezza – 4 ore</td><td>circa 3 ore e mezza – 4 ore</td><td>circa 3 ore e mezza – 4 ore</td></tr>
+    </table></div>
   </section>
 </div>
 
-<footer>Ricettario personale — raccolta di ricette tradizionali e per Crock-Pot Turbo Express.</footer>
+<footer>Ricettario di Salvo e Valeria — le ricette di casa sono nostre; le altre sono tratte dai ricettari Crock-Pot indicati in ogni scheda.</footer>
 
 <div class="overlay" id="overlay">
   <div class="sheet" id="sheet"></div>

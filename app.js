@@ -33,7 +33,14 @@
       var op = document.createElement('option'); op.value = v; op.textContent = v; el.appendChild(op);
     });
   }
-  fillSelect($('catSel'), uniq('category'), 'Tutte le categorie');
+  var COURSE_ORDER = ['Antipasti','Antipasti e snack','Primi','Secondi','Piatti unici','Contorni','Contorni & pane','Dolci','Colazioni','Liquori'];
+  var courses = uniq('course');
+  courses.sort(function(a, b){
+    var ia = COURSE_ORDER.indexOf(a), ib = COURSE_ORDER.indexOf(b);
+    if(ia === -1) ia = 99; if(ib === -1) ib = 99;
+    return ia !== ib ? ia - ib : (a < b ? -1 : 1);
+  });
+  fillSelect($('catSel'), courses, 'Tutte le portate');
   fillSelect($('srcSel'), uniq('source'), 'Tutte le fonti');
   var allModes = {};
   R.forEach(function(r){ modesOf(r).forEach(function(m){ allModes[m] = 1; }); });
@@ -50,7 +57,7 @@
   });
 
   function matches(r){
-    if(state.cat && r.category !== state.cat) return false;
+    if(state.cat && (r.course || r.category) !== state.cat) return false;
     if(state.src && r.source !== state.src) return false;
     if(state.mode && modesOf(r).indexOf(state.mode) === -1) return false;
     if(state.q){
@@ -65,7 +72,7 @@
   function cardHtml(r){
     var h = '<article class="card" data-slug="' + esc(r.slug) + '">';
     h += '<h3>' + esc(r.title) + '</h3>';
-    h += '<div class="meta"><span>' + esc(r.category) + '</span>';
+    h += '<div class="meta"><span>' + esc(r.course || r.category) + '</span>';
     if(r.kcal) h += '<span>~' + esc(r.kcal) + ' kcal</span>';
     if(r.timeMinutes != null) h += '<span>' + fmtTime(r.timeMinutes) + '</span>';
     h += '</div>';
@@ -97,7 +104,7 @@
     if(!r) return;
     var h = '<button class="close" type="button" id="closeBtn" aria-label="Chiudi">×</button>';
     h += '<h2>' + esc(r.title) + '</h2>';
-    h += '<div class="meta"><span>' + esc(r.category) + '</span>';
+    h += '<div class="meta"><span>' + esc(r.course || r.category) + '</span>';
     if(r.servings) h += '<span>' + esc(r.servings) + '</span>';
     if(r.kcal) h += '<span>~' + esc(r.kcal) + ' kcal a porzione</span>';
     if(r.timeMinutes != null) h += '<span>cottura: ' + fmtTime(r.timeMinutes) + '</span>';
