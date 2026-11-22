@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il Ricettario — 254 ricette</title>
+<meta name="description" content="Ricettario personale: ricette tradizionali e per Crock-Pot Express (pressione, slow cook, sous vide), con filtri per categoria, fonte, metodo e tempo di cottura.">
+<style>
+  :root{
+    --bg:#faf6f0; --card:#ffffff; --ink:#2b2118; --muted:#7a6a58; --line:#e7dccb;
+    --accent:#b4551f; --accent-soft:#f7e8dc; --chip:#f1e9db; --warn:#9c2b2e; --warn-bg:#fbecec;
+    --shadow:0 1px 3px rgba(60,40,20,.12),0 4px 14px rgba(60,40,20,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink)}
+  header{padding:28px 16px 8px;text-align:center}
+  header h1{margin:0;font-size:34px;letter-spacing:.5px}
+  header p{margin:6px 0 0;color:var(--muted);font-size:15px}
+  .wrap{max-width:1080px;margin:0 auto;padding:12px 14px 48px}
+  .controls{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+  .controls input[type=search]{width:100%;padding:11px 13px;font-size:16px;border:1px solid var(--line);border-radius:10px;font-family:inherit;background:#fffdf9}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+  .row label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  select{padding:9px 10px;font-size:15px;border:1px solid var(--line);border-radius:10px;font-family:inherit;background:#fffdf9;max-width:100%}
+  .cats{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .cat{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;font-family:inherit}
+  .cat.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .sliderbox{flex:1 1 260px;display:flex;align-items:center;gap:10px}
+  input[type=range]{flex:1;accent-color:var(--accent)}
+  .tval{font-size:14px;white-space:nowrap;min-width:92px}
+  .quick{display:flex;gap:6px;flex-wrap:wrap}
+  .quick button{border:1px solid var(--line);background:#fffdf9;border-radius:999px;padding:5px 11px;font-size:13px;cursor:pointer;font-family:inherit}
+  .quick button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .count{margin:16px 2px 10px;color:var(--muted);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:7px}
+  .card:hover{border-color:var(--accent)}
+  .card h3{margin:0;font-size:17px;line-height:1.3}
+  .meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 12px}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+  .badge{font-size:11.5px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:3px 9px}
+  .badge.src{background:var(--chip);color:var(--muted)}
+  .badge.alg{background:var(--warn-bg);color:var(--warn)}
+  .tag{font-size:11.5px;color:var(--muted)}
+  .empty{text-align:center;color:var(--muted);padding:40px 10px;font-size:16px}
+  .empty button{margin-top:12px;border:1px solid var(--accent);color:var(--accent);background:#fff;border-radius:999px;padding:8px 16px;font-size:14px;cursor:pointer;font-family:inherit}
+  .viewtoggle{display:flex;gap:8px;justify-content:center;margin-top:14px}
+  .viewtoggle button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 18px;font-size:15px;cursor:pointer;font-family:inherit}
+  .viewtoggle button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* detail */
+  .overlay{position:fixed;inset:0;background:rgba(30,20,10,.55);display:none;z-index:50;padding:14px;overflow:auto}
+  .overlay.open{display:block}
+  .sheet{background:var(--card);max-width:720px;margin:24px auto;border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .sheet h2{margin:0 40px 6px 0;font-size:24px;line-height:1.25}
+  .sheet h4{margin:18px 0 6px;font-size:16px}
+  .sheet ul,.sheet ol{margin:6px 0;padding-left:22px;line-height:1.55;font-size:15.5px}
+  .sheet .close{float:right;border:1px solid var(--line);background:#fffdf9;border-radius:999px;width:36px;height:36px;font-size:18px;cursor:pointer}
+  .warnbox{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:14.5px;margin-top:10px}
+  .nutri{font-size:14px;color:var(--muted);line-height:1.5}
+  /* guide */
+  .guide h2{font-size:22px;margin:22px 0 4px}
+  .guide p.note{color:var(--muted);font-size:14px;margin:4px 0 10px}
+  .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+  th,td{padding:8px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--accent-soft);color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+  tr:last-child td{border-bottom:none}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 30px}
+  @media (max-width:560px){ header h1{font-size:28px} .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))} table{min-width:0;font-size:13.5px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Il Ricettario</h1>
+  <p>254 ricette: tradizionali e per Crock-Pot Turbo Express — pressione, slow cook e sous vide</p>
+  <div class="viewtoggle">
+    <button id="btnRecipes" class="on" type="button">Ricette</button>
+    <button id="btnGuide" type="button">Guida Turbo Express</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="viewRecipes">
+    <div class="controls">
+      <input id="q" type="search" placeholder="Cerca una ricetta o un ingrediente…" autocomplete="off">
+      <div class="cats" id="cats"></div>
+      <div class="row">
+        <label for="srcSel">Fonte</label>
+        <select id="srcSel"></select>
+        <label for="modeSel">Metodo</label>
+        <select id="modeSel"></select>
+      </div>
+      <div class="row">
+        <label>Tempo massimo</label>
+        <div class="sliderbox">
+          <input id="tSlider" type="range" min="5" max="1440" step="5" value="1440">
+          <span class="tval" id="tVal">qualsiasi</span>
+        </div>
+        <div class="quick" id="quick">
+          <button type="button" data-t="30">30 min</button>
+          <button type="button" data-t="60">1 h</button>
+          <button type="button" data-t="120">2 h</button>
+          <button type="button" data-t="240">4 h</button>
+          <button type="button" data-t="1440" class="on">Tutti</button>
+        </div>
+      </div>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none">
+      Nessuna ricetta con questi filtri.<br>
+      <button type="button" id="resetBtn">Mostra tutte le ricette</button>
+    </div>
+  </section>
+
+  <section id="viewGuide" class="guide" style="display:none">
+    <p class="note">Tabelle ufficiali dal manuale Crock-Pot Turbo Express CSC062X.</p>
+
+    <h2>Funzioni della multicooker</h2>
+    <p class="note">Cooking Guide (pag. 12 del manuale). La pressione Turbo riduce i tempi del 40% ed è compatibile con STEAM, RICE/GRAINS, BEANS/CHILI, MEAT/POULTRY, SOUP/STEW e MANUAL. Rapporto standard per il riso: 1 tazza di riso crudo : 1,5 tazze d'acqua.</p>
+    <div class="tablewrap"><table>
+      <tr><th>Funzione</th><th>Predefinita</th><th>Pressione</th><th>Temperatura</th><th>Tempo impostabile</th></tr>
+      <tr><td>SLOW COOK</td><td>Temp. alta / 4 ore</td><td>—</td><td>Bassa–Alta</td><td>30 min – 20 ore</td></tr>
+      <tr><td>STEAM</td><td>Alta pressione / 10 min</td><td>Bassa, Alta, Turbo</td><td>—</td><td>1 min – 1 ora</td></tr>
+      <tr><td>BROWN/SAUTÉ</td><td>Temp. alta / 30 min</td><td>—</td><td>Bassa–Alta</td><td>5 – 30 min</td></tr>
+      <tr><td>SOUS VIDE</td><td>60 °C / 1 ora</td><td>—</td><td>24–90 °C</td><td>5 min – 24 ore</td></tr>
+      <tr><td>SIMMER</td><td>Temp. bassa / 15 min</td><td>—</td><td>Bassa–Alta</td><td>5 min – 4 ore</td></tr>
+      <tr><td>KEEP WARM</td><td>Temp. calda / 4 ore</td><td>—</td><td>Calda</td><td>30 min – 4 ore</td></tr>
+      <tr><td>MEAT/POULTRY</td><td>Alta pressione / 35 min</td><td>Bassa, Alta, Turbo</td><td>—</td><td>5 min – 2 ore</td></tr>
+      <tr><td>BEANS/CHILI</td><td>Alta pressione / 20 min</td><td>Bassa, Alta, Turbo</td><td>—</td><td>1 min – 4 ore</td></tr>
+      <tr><td>RICE/GRAINS</td><td>Alta pressione / 12 min</td><td>Bassa, Alta, Turbo</td><td>—</td><td>3 – 30 min</td></tr>
+      <tr><td>YOGURT</td><td>Temp. bassa / 8 ore</td><td>—</td><td>Bassa: 6–12 ore (Alta: n.d.)</td><td>—</td></tr>
+      <tr><td>DESSERT</td><td>Bassa pressione / 10 min</td><td>Bassa–Alta</td><td>—</td><td>5 min – 2 ore</td></tr>
+      <tr><td>SOUP/STEW</td><td>Alta pressione / 30 min</td><td>Bassa, Alta, Turbo</td><td>—</td><td>5 min – 2 ore</td></tr>
+      <tr><td>MANUAL</td><td>Alta pressione / 30 min</td><td>Bassa, Alta, Turbo</td><td>—</td><td>1 min – 4 ore</td></tr>
+    </table></div>
+
+    <h2>Cottura a vapore (STEAM)</h2>
+    <p class="note">Steaming Chart (pag. 13): alta pressione, con griglia vapore.</p>
+    <div class="tablewrap"><table>
+      <tr><th>Alimento</th><th>Quantità</th><th>Acqua</th><th>Preparazione</th><th>Tempo</th></tr>
+      <tr><td>Asparagi</td><td>250 g</td><td>400 ml</td><td>rifilare le estremità legnose</td><td>2 min</td></tr>
+      <tr><td>Broccoli</td><td>300 g</td><td>400 ml</td><td>pulire i gambi</td><td>2 min</td></tr>
+      <tr><td>Cavolfiore</td><td>500 g</td><td>400 ml</td><td>cimette da 5 cm</td><td>3 min</td></tr>
+      <tr><td>Pannocchie</td><td>2</td><td>400 ml</td><td>togliere le foglie esterne</td><td>3 min</td></tr>
+      <tr><td>Verdure miste surgelate</td><td>500 g</td><td>400 ml</td><td>cuocere da surgelate</td><td>3 min</td></tr>
+      <tr><td>Cavolini di Bruxelles</td><td>400 g</td><td>400 ml</td><td>togliere le foglie esterne, interi</td><td>4 min</td></tr>
+      <tr><td>Cavolo verde</td><td>1 intero</td><td>400 ml</td><td>tagliare in quarti</td><td>4 min</td></tr>
+      <tr><td>Porri</td><td>500 g</td><td>400 ml</td><td>rifilare, rondelle da 2 cm</td><td>4 min</td></tr>
+      <tr><td>Carote</td><td>500 g</td><td>400 ml</td><td>rondelle da 1 cm</td><td>5 min</td></tr>
+      <tr><td>Patate dolci</td><td>900 g – 1 kg</td><td>400 ml</td><td>pelare, pezzi grandi</td><td>5 min</td></tr>
+      <tr><td>Carote e rapa svedese</td><td>600 g</td><td>400 ml</td><td>pelare, pezzi di misura simile</td><td>6 min</td></tr>
+      <tr><td>Riso basmati</td><td>400 g (2 tazze)</td><td>600 ml</td><td>sciacquare prima dell'uso</td><td>6 min</td></tr>
+      <tr><td>Zucca butternut</td><td>900 g – 1 kg (1 intera)</td><td>400 ml</td><td>a metà, senza semi, in 6 fette</td><td>7 min</td></tr>
+      <tr><td>Uova</td><td>6</td><td>400 ml</td><td>intere nel guscio</td><td>7 min</td></tr>
+      <tr><td>Filetto di pollo</td><td>2–4 filetti</td><td>400 ml</td><td>condire prima della cottura</td><td>8 min</td></tr>
+      <tr><td>Patate novelle</td><td>750 g</td><td>400 ml</td><td>intere</td><td>8 min</td></tr>
+      <tr><td>Patate bianche (per purè)</td><td>900 g – 1 kg</td><td>400 ml</td><td>pelare, pezzi grandi</td><td>9 min</td></tr>
+      <tr><td>Riso integrale</td><td>400 g (2 tazze)</td><td>400 ml</td><td>sciacquare prima dell'uso</td><td>22 min</td></tr>
+    </table></div>
+
+    <h2>Sous vide</h2>
+    <p class="note">Sous Vide Cooking Guide (pag. 22): temperature e tempi ufficiali per spessore.</p>
+    <div class="tablewrap"><table>
+      <tr><th>Alimento</th><th>Spessore</th><th>Temperatura</th><th>Tempo</th></tr>
+      <tr><td>Manzo: filetto, controfiletto, rib eye, T-bone, braciole</td><td>2–5 cm</td><td>49 °C o superiore</td><td>1–1,5 ore</td></tr>
+      <tr><td>Manzo: girello e tagli da arrosto</td><td>8–12 cm</td><td>56 °C o superiore</td><td>24 ore</td></tr>
+      <tr><td>Manzo: tagli da brasato, coda di bue</td><td>2–5 cm</td><td>56 °C o superiore</td><td>8–10 ore</td></tr>
+      <tr><td>Agnello: scamone, filetto, braciole, carré</td><td>4–6 cm</td><td>49 °C o superiore</td><td>1–2 ore</td></tr>
+      <tr><td>Agnello: spalla, cosciotto, stinco</td><td>8–10 cm</td><td>56 °C o superiore</td><td>8–10 ore</td></tr>
+      <tr><td>Maiale: braciole, lombo</td><td>2–4 cm</td><td>56 °C o superiore</td><td>4 ore</td></tr>
+      <tr><td>Maiale: pancia, costine</td><td>—</td><td>56 °C o superiore</td><td>4 ore</td></tr>
+      <tr><td>Petto di pollo</td><td>3–5 cm</td><td>62 °C</td><td>1–2 ore</td></tr>
+      <tr><td>Coscia di pollo disossata</td><td>3–5 cm</td><td>65 °C</td><td>1–2 ore</td></tr>
+      <tr><td>Coscia di pollo con osso</td><td>3–6 cm</td><td>82 °C</td><td>1,5–3 ore</td></tr>
+      <tr><td>Petto d'anatra</td><td>3–5 cm</td><td>64 °C</td><td>2–4 ore</td></tr>
+      <tr><td>Pesce: filetti</td><td>2–4 cm</td><td>50 °C o superiore</td><td>1 ora</td></tr>
+      <tr><td>Pesce intero</td><td>4–6 cm</td><td>60 °C</td><td>1–1,5 ore</td></tr>
+      <tr><td>Gamberi</td><td>1–3 cm</td><td>60 °C</td><td>1 ora</td></tr>
+      <tr><td>Aragosta</td><td>4–6 cm</td><td>60 °C</td><td>1 ora</td></tr>
+      <tr><td>Capesante</td><td>2–4 cm</td><td>60 °C</td><td>1 ora</td></tr>
+      <tr><td>Verdure tenere</td><td>1–5 cm</td><td>83 °C o superiore</td><td>1 ora</td></tr>
+      <tr><td>Verdure a radice</td><td>1–5 cm</td><td>83 °C o superiore</td><td>1–1,5 ore</td></tr>
+    </table></div>
+  </section>
+</div>
+
+<footer>Ricettario personale — raccolta di ricette tradizionali e per Crock-Pot Turbo Express.</footer>
+
+<div class="overlay" id="overlay">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
